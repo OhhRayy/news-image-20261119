@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""news-image-20261119 entry (Python 3.13, standard library only).
+"""news-image-20261119 entry, v2 "Solemn Verdict" (Python 3.13, standard library only).
 
 The entry is the infographic in entry.png: six labelled story cards
 summing up the world news of Thursday 19 November 2026. This program
@@ -10,11 +10,16 @@ Local check:
     mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py
 """
 
+import hashlib
 import os
 import shutil
 from pathlib import Path
 
 ENTRY = Path(__file__).resolve().parent / "entry.png"
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def main() -> None:
@@ -27,6 +32,8 @@ def main() -> None:
     expected = ENTRY.stat().st_size
     if written != expected:
         raise RuntimeError(f"entry.png copy is incomplete: {written} != {expected}")
+    if _sha256(destination) != _sha256(ENTRY):
+        raise RuntimeError("entry.png copy differs from the source image")
 
 
 if __name__ == "__main__":
